@@ -1,0 +1,620 @@
+@charset "UTF-8";  /* must be the very first line: tells the browser how to decode this file */
+/* ==========================================================================
+   Accessibility Principles Demo – site styles
+
+   Things to notice:
+   • Sizes use rem/em, so the layout grows when users zoom or change the
+     browser's default font size (Distinguishable).
+   • Every color pair below has been checked for at least 4.5:1 contrast.
+   • Focus is always visible (:focus-visible) and never removed (Navigable).
+   • Dark mode, reduced motion, and Windows "forced colors" (High Contrast)
+     are respected (Adaptable, Seizures & motion).
+   ========================================================================== */
+
+:root {
+    --bg: #ffffff;
+    --surface: #f4f6f8;
+    --text: #1b1b1b;          /* 17.0:1 on --bg */
+    --muted: #4a4a4a;         /*  8.9:1 on --bg */
+    --border: #767676;        /*  4.5:1 – also meets 3:1 for UI components */
+    --link: #0b5cad;          /*  6.6:1 */
+    --link-visited: #5a2d91;  /*  9.0:1 */
+    --accent: #0b5cad;
+    --accent-text: #ffffff;
+    --good: #146c2e;          /*  6.5:1 */
+    --good-bg: #e8f5ec;
+    --bad: #b00020;           /*  6.9:1 */
+    --bad-bg: #fdecee;
+    --warn-bg: #fff4d6;
+    --focus: #1b1b1b;
+    --focus-halo: #ffbf47;
+    --radius: 0.375rem;
+    --max-text: 70ch;
+    color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #121417;
+        --surface: #1d2126;
+        --text: #f1f1f1;
+        --muted: #c4c7cc;
+        --border: #8f969e;
+        --link: #8cc4ff;
+        --link-visited: #d0b3ff;
+        --accent: #8cc4ff;
+        --accent-text: #0b1520;
+        --good: #7ddc97;
+        --good-bg: #13291b;
+        --bad: #ff9aa8;
+        --bad-bg: #331419;
+        --warn-bg: #3a3014;
+        --focus: #ffbf47;
+        --focus-halo: #121417;
+    }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+    font-size: 100%;   /* respect the user's browser font-size setting */
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+}
+
+/* ---------- Typography ---------- */
+
+h1, h2, h3, h4 { line-height: 1.25; margin: 1.5em 0 0.5em; }
+h1 { font-size: 2rem; margin-top: 0.25em; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.2rem; }
+p, li, dd { max-width: var(--max-text); }
+
+a { color: var(--link); text-underline-offset: 0.15em; }
+a:visited { color: var(--link-visited); }
+a:hover { text-decoration-thickness: 0.15em; }
+
+code, pre, kbd { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 0.95em; }
+kbd {
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 0.25rem;
+    padding: 0 0.35em;
+    background: var(--surface);
+}
+
+abbr[title] { text-decoration: underline dotted; cursor: help; }
+
+/* ---------- Focus (Navigable: "keyboard focus is visible") ---------- */
+
+:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 6px var(--focus-halo);
+}
+
+/* Elements we move focus to programmatically (e.g. <main> after the skip link)
+   don't need a big ring, but we never remove focus styles from controls. */
+[tabindex="-1"]:focus:not(:focus-visible) { outline: none; box-shadow: none; }
+
+/* ---------- Utilities ---------- */
+
+/* Hides content visually but keeps it available to screen readers.
+   Never use display:none for this – that hides it from everyone. */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0);
+    white-space: nowrap; border: 0;
+}
+
+/* Skip link: off-screen until it receives keyboard focus. */
+.skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -100px;
+    z-index: 100;
+    background: var(--accent);
+    color: var(--accent-text) !important;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    font-weight: 700;
+}
+.skip-link:focus { top: 1rem; }
+
+/* ---------- Page layout ---------- */
+
+.site-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;             /* reflows instead of overflowing */
+    gap: 0.75rem 2rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.site-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--text) !important;
+    text-decoration: none;
+}
+.site-name:hover { text-decoration: underline; }
+
+.site-search { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.site-search label { font-weight: 600; }
+
+.layout {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 60em) {   /* em-based breakpoint: also triggers when text is zoomed */
+    .layout { grid-template-columns: 17rem minmax(0, 1fr); }
+}
+
+.site-nav {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+}
+@media (min-width: 60em) {
+    .site-nav { border-bottom: 0; border-right: 1px solid var(--border); padding-right: 1rem; }
+}
+
+.site-nav ul { list-style: none; margin: 0; padding: 0; }
+.site-nav li { margin: 0; }
+.nav-group {
+    margin: 1rem 0 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.site-nav a {
+    display: block;
+    padding: 0.4rem 0.6rem;     /* comfortable touch target */
+    min-height: 2.75rem;        /* ≈44px */
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--link);
+}
+.site-nav a:hover { text-decoration: underline; }
+/* Current page: indicated by weight, a bar AND aria-current – not color alone. */
+.site-nav a[aria-current="page"] {
+    font-weight: 700;
+    color: var(--text);
+    background: var(--surface);
+    box-shadow: inset 4px 0 0 var(--accent);
+}
+
+main { padding: 1rem 0 3rem; min-width: 0; }
+
+.site-footer {
+    margin-top: 2rem;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+}
+.footer-inner {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    align-items: center;
+    justify-content: space-between;
+}
+.footer-inner p { margin: 0; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; list-style: none; margin: 0; padding: 0; }
+
+/* ---------- Breadcrumbs ---------- */
+
+.breadcrumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: 0.25rem; margin: 0 0 1rem; padding: 0; }
+.breadcrumbs li { display: flex; align-items: center; }
+.breadcrumbs li + li::before {
+    content: "\203A";            /* › written as a CSS escape so it can't be mis-decoded */
+    content: "\203A" / "";       /* empty alt text: screen readers skip the decorative separator */
+    margin: 0 0.5rem;
+    color: var(--muted);
+}
+.breadcrumbs [aria-current="page"] { font-weight: 600; }
+
+/* ---------- Components ---------- */
+
+.eyebrow { margin: 0; font-weight: 600; color: var(--muted); }
+.lead { font-size: 1.2rem; }
+
+.w3c-summary, .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.5rem 1.25rem 1rem;
+    margin: 1.5rem 0;
+}
+.w3c-summary h2 { margin-top: 0.75rem; font-size: 1.25rem; }
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+}
+.card-grid > li { max-width: none; }
+.card-grid .card { margin: 0; height: 100%; }
+.card h3 { margin-top: 0.75rem; }
+
+/* Do / Don't comparison boxes. The heading text says "Do" or "Don't" and
+   has an icon, so meaning is not carried by the border color alone. */
+.compare {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: 1rem;
+    margin: 1rem 0 1.5rem;
+}
+.example {
+    border: 2px solid var(--border);
+    border-left-width: 0.5rem;
+    border-radius: var(--radius);
+    padding: 0.25rem 1rem 1rem;
+    min-width: 0;
+}
+.example > h3, .example > h4 { margin-top: 0.75rem; }
+.example-good { border-color: var(--good); background: var(--good-bg); }
+.example-bad  { border-color: var(--bad);  background: var(--bad-bg); }
+/* Icons use CSS escapes (\2713 = ✓, \2717 = ✗) instead of the literal characters, so they
+   display correctly even if the browser guesses the wrong file encoding. An escape eats one
+   following space, so "\2713  " (two spaces) produces "✓ ". The second declaration adds empty
+   alt text ( / "" ) so screen readers don't say "check mark" before every heading; browsers
+   that don't support that syntax ignore it and keep the first declaration. */
+.example-good > :is(h3, h4)::before { content: "\2713  "; content: "\2713  " / ""; color: var(--good); }
+.example-bad  > :is(h3, h4)::before { content: "\2717  "; content: "\2717  " / ""; color: var(--bad); }
+
+.callout {
+    border-left: 0.35rem solid var(--accent);
+    background: var(--surface);
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    border-radius: var(--radius);
+}
+.callout-warning { background: var(--warn-bg); border-left-color: #8a5a00; }
+.callout > :first-child { margin-top: 0; }
+.callout > :last-child { margin-bottom: 0; }
+
+pre.code {
+    background: #1e1e1e;
+    color: #f0f0f0;            /* 15:1 */
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    overflow-x: auto;
+    max-width: 100%;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    tab-size: 4;
+}
+pre.code-good { border-left: 0.4rem solid #4cc26b; }
+pre.code-bad  { border-left: 0.4rem solid #ff6b7d; }
+
+/* ---------- Forms & buttons ---------- */
+
+label, legend { font-weight: 600; }
+
+input[type="text"], input[type="email"], input[type="search"], input[type="tel"],
+select, textarea {
+    font: inherit;
+    color: var(--text);
+    background: var(--bg);
+    border: 2px solid var(--border);      /* 3:1+ boundary for form fields */
+    border-radius: var(--radius);
+    padding: 0.5rem 0.65rem;
+    min-height: 2.75rem;
+    max-width: 100%;
+}
+input[type="color"] { width: 4rem; height: 2.75rem; padding: 0.15rem; border: 2px solid var(--border); border-radius: var(--radius); background: var(--bg); }
+textarea { width: 100%; max-width: 40rem; min-height: 6rem; }
+
+.button, button {
+    font: inherit;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;    /* ≈44px target size */
+    min-width: 2.75rem;
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+    background: var(--accent);
+    color: var(--accent-text) !important;
+    text-decoration: none;
+    cursor: pointer;
+}
+.button:hover, button:hover { filter: brightness(1.1); }
+.button-secondary, button.button-secondary {
+    background: transparent;
+    color: var(--accent) !important;
+}
+.button-danger, button.button-danger { background: var(--bad); border-color: var(--bad); color: var(--bg) !important; }
+button[aria-pressed="true"] { background: var(--accent); color: var(--accent-text) !important; }
+button[aria-pressed="true"]::before { content: "\2713"; content: "\2713" / ""; }  /* state is already announced via aria-pressed */
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.form-group { margin: 0 0 1.25rem; }
+.form-group > label, .form-group > legend { display: block; margin-bottom: 0.25rem; }
+.hint { display: block; color: var(--muted); margin: 0 0 0.35rem; font-size: 0.95rem; }
+.required-marker { color: var(--bad); }
+
+.field-error {
+    display: block;
+    color: var(--bad);
+    font-weight: 600;
+    margin: 0 0 0.35rem;
+}
+.field-error:empty { display: none; }
+.field-error:not(:empty)::before { content: "Error: "; }   /* not color alone */
+.input-validation-error, [aria-invalid="true"] { border-color: var(--bad) !important; border-width: 3px !important; }
+
+fieldset { border: 2px solid var(--border); border-radius: var(--radius); padding: 0.5rem 1rem 1rem; margin: 0 0 1.25rem; }
+.radio-option { display: flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; }
+.radio-option input { width: 1.4rem; height: 1.4rem; margin: 0; accent-color: var(--accent); }
+.radio-option label { font-weight: 400; }
+
+.error-summary {
+    border: 3px solid var(--bad);
+    background: var(--bad-bg);
+    border-radius: var(--radius);
+    padding: 0.5rem 1.25rem 1rem;
+    margin: 1rem 0 1.5rem;
+}
+.error-summary h2 { margin-top: 0.5rem; color: var(--bad); }
+
+.success-panel {
+    border: 3px solid var(--good);
+    background: var(--good-bg);
+    border-radius: var(--radius);
+    padding: 0.5rem 1.25rem 1rem;
+    margin: 1rem 0;
+}
+
+.button-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin: 1rem 0; }
+
+/* ---------- Tables ---------- */
+
+.table-wrap { overflow-x: auto; max-width: 100%; }
+table { border-collapse: collapse; margin: 1rem 0; min-width: 20rem; }
+caption { text-align: left; font-weight: 700; padding-bottom: 0.5rem; }
+th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; vertical-align: top; }
+thead th { background: var(--surface); }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+dl.review { display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1.5rem; }
+dl.review dt { font-weight: 700; }
+dl.review dd { margin: 0; }
+@media (max-width: 30em) { dl.review { grid-template-columns: 1fr; } dl.review dd { margin-bottom: 0.5rem; } }
+
+/* ---------- Pager ---------- */
+
+.pager { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.pager a { display: inline-block; padding: 0.5rem 0; }
+.pager .next { margin-left: auto; text-align: right; }
+
+/* ---------- Demo widgets ---------- */
+
+.swatch { display: inline-block; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--radius); font-weight: 600; }
+
+.status-list { list-style: none; padding: 0; }
+.status-list li { display: flex; align-items: center; gap: 0.5rem; margin: 0.4rem 0; }
+.dot { width: 1rem; height: 1rem; border-radius: 50%; display: inline-block; flex: none; }
+.dot-green { background: #2e9e4a; }
+.dot-red { background: #d0303f; }
+.badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.15rem 0.6rem; border-radius: 999px; font-weight: 700; border: 2px solid currentColor; }
+.badge-pass { color: var(--good); background: var(--good-bg); }
+.badge-fail { color: var(--bad); background: var(--bad-bg); }
+
+.image-of-text { max-width: 100%; height: auto; }
+
+/* The WCAG 1.4.12 text-spacing test values (toggled on the Distinguishable page). */
+.wcag-spacing, .wcag-spacing * {
+    line-height: 1.5 !important;
+    letter-spacing: 0.12em !important;
+    word-spacing: 0.16em !important;
+}
+.wcag-spacing p { margin-bottom: 2em !important; }
+
+.fake-button {               /* the "Don't" example on the keyboard page */
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: #6b6b6b;
+    color: #fff;
+    border-radius: var(--radius);
+    cursor: pointer;
+    user-select: none;
+}
+
+.ticker {
+    overflow: hidden;
+    white-space: nowrap;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.5rem 0;
+    background: var(--bg);
+}
+.ticker-track { display: inline-block; padding-left: 100%; animation: ticker 20s linear infinite; }
+.ticker.is-paused .ticker-track { animation-play-state: paused; }
+@keyframes ticker { to { transform: translateX(-100%); } }
+
+.timer-display { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.motion-stage {
+    position: relative;
+    height: 6rem;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--surface);
+}
+.motion-ball {
+    position: absolute;
+    top: 1.5rem; left: 1rem;
+    width: 3rem; height: 3rem;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: bounce 2.5s ease-in-out infinite alternate;
+}
+.motion-stage.is-paused .motion-ball { animation-play-state: paused; }
+@keyframes bounce { to { left: calc(100% - 4rem); } }
+
+.sortable { list-style: none; padding: 0; max-width: 32rem; }
+.sortable li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    margin: 0.4rem 0;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    max-width: none;
+}
+.sortable li[draggable="true"] { cursor: grab; }
+.sortable li.dragging { opacity: 0.5; }
+.sortable .item-actions { display: flex; gap: 0.4rem; }
+
+/* The intentionally bad "no focus indicator" example on the Navigable page. */
+.no-focus-demo a:focus, .no-focus-demo a:focus-visible { outline: none; box-shadow: none; }
+
+.target-demo { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.tiny-target { min-height: 0; min-width: 0; padding: 0 0.2rem; font-size: 0.7rem; line-height: 1; }
+
+/* Custom toggle switch (Compatible page) */
+.switch {
+    background: transparent;
+    color: var(--text) !important;
+    border: 2px solid var(--border);
+    gap: 0.75rem;
+}
+.switch-track {
+    width: 2.75rem; height: 1.5rem;
+    border-radius: 999px;
+    background: #767676;
+    position: relative;
+    flex: none;
+}
+.switch-thumb {
+    position: absolute;
+    top: 0.2rem; left: 0.2rem;
+    width: 1.1rem; height: 1.1rem;
+    border-radius: 50%;
+    background: #fff;
+    transition: left 0.15s;
+}
+.switch[aria-checked="true"] .switch-track { background: var(--good); }
+.switch[aria-checked="true"] .switch-thumb { left: 1.45rem; }
+.switch-state { font-weight: 700; min-width: 2em; }
+
+/* Tabs (Compatible page) */
+.tablist { display: flex; flex-wrap: wrap; gap: 0.25rem; border-bottom: 2px solid var(--border); }
+.tablist [role="tab"] {
+    background: var(--surface);
+    color: var(--text) !important;
+    border: 2px solid var(--border);
+    border-bottom: 0;
+    border-radius: var(--radius) var(--radius) 0 0;
+    margin-bottom: -2px;
+}
+.tablist [role="tab"][aria-selected="true"] {
+    background: var(--bg);
+    border-color: var(--accent);
+    border-top-width: 5px;
+    box-shadow: 0 2px 0 var(--bg);
+}
+[role="tabpanel"] { border: 2px solid var(--border); border-top: 0; padding: 0.25rem 1rem 1rem; border-radius: 0 0 var(--radius) var(--radius); }
+
+dialog {
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.5rem;
+    max-width: min(32rem, calc(100vw - 2rem));
+    background: var(--bg);
+    color: var(--text);
+}
+dialog::backdrop { background: rgb(0 0 0 / 0.55); }
+
+.toast {
+    border: 2px solid var(--border);
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 0.5rem 1rem;
+    display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;
+}
+.toast[hidden] { display: none; }
+
+.video-wrap video { width: 100%; max-width: 40rem; height: auto; background: #000; }
+
+/* ---------- Reduced motion ----------
+   Two ways to turn motion off:
+   1. The operating system setting (prefers-reduced-motion), and
+   2. The site's own "Reduce motion" button, which adds .reduce-motion to <html>. */
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+.reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+}
+
+/* ---------- Windows High Contrast / forced colors ----------
+   Backgrounds and box-shadows are removed in this mode, so anything that
+   relied on them needs a real border or outline instead. */
+
+@media (forced-colors: active) {
+    :focus-visible { outline: 3px solid CanvasText; box-shadow: none; }
+    .site-nav a[aria-current="page"] { border-left: 4px solid CanvasText; }
+    .switch-thumb, .dot { forced-color-adjust: none; border: 1px solid CanvasText; }
+    .tablist [role="tab"][aria-selected="true"] { border-top: 5px solid Highlight; }
+}
+
+/* ---------- Print ---------- */
+
+@media print {
+    .skip-link, .site-nav, .site-search, .site-footer, .pager { display: none; }
+    .layout { display: block; }
+    a[href^="http"]::after { content: " (" attr(href) ")"; }
+}

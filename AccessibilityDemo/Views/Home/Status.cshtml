@@ -1,0 +1,29 @@
+@{
+    var code = (int)(ViewData["StatusCode"] ?? 0);
+    var isNotFound = code == 404;
+    ViewData["Title"] = isNotFound ? "Page not found" : $"Error {code}";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (isNotFound)
+{
+    <p>We couldn't find that page. If you typed the address, check that it is spelled correctly.</p>
+}
+else
+{
+    <p>The server returned status code @code.</p>
+}
+
+<p>You can:</p>
+<ul>
+    <li>go to the <a asp-controller="Home" asp-action="Index">home page</a>,</li>
+    <li>browse the <a asp-controller="Home" asp-action="SiteMap">site map</a>, or</li>
+    <li>search for what you need:</li>
+</ul>
+
+<form method="get" asp-controller="Home" asp-action="Search" role="search" aria-label="Search from error page">
+    <label for="status-search-q">Search principles</label>
+    <input type="search" id="status-search-q" name="q" />
+    <button type="submit">Search</button>
+</form>

@@ -1,0 +1,75 @@
+@* Principle 7 – Content does not cause seizures and physical reactions *@
+
+<div class="callout">
+    <p><strong>This page contains no flashing content.</strong> The examples below describe flashing; they don't show it.</p>
+</div>
+
+<h2>The three-flashes rule</h2>
+<p>
+    Content must not flash more than <strong>three times in any one second</strong>, unless the flashing area is
+    very small or below the brightness thresholds WCAG defines. Saturated red flashes are especially dangerous.
+    The safest choice is simply not to flash. Watch out for:
+</p>
+<ul>
+    <li>strobe effects in videos, games, and animated GIFs;</li>
+    <li>rapidly alternating light and dark backgrounds or “alert” effects;</li>
+    <li>fast blinking text or banners.</li>
+</ul>
+<p>
+    The free <a href="https://trace.umd.edu/peat/">Photosensitive Epilepsy Analysis Tool (PEAT)</a> can check video for dangerous flashes.
+</p>
+
+<h2>Warn before flashing content</h2>
+<p>
+    If content might trigger a reaction, warn users <em>before</em> it starts and offer an alternative.
+    Nothing should start until the user chooses.
+</p>
+<div class="card" id="flash-warning">
+    <h3>Content warning</h3>
+    <p>The next video clip of a concert contains strobe lighting and flashing lights.</p>
+    <div class="button-row">
+        <button type="button" id="flash-alt">Read a text description instead</button>
+        <button type="button" class="button-secondary" id="flash-continue">Continue to the video</button>
+    </div>
+    <div id="flash-result" tabindex="-1" hidden></div>
+</div>
+
+<h2>Let users turn animation off</h2>
+<p>
+    Animation such as parallax scrolling, zooming, and large moving elements can cause dizziness and nausea for
+    people with vestibular disorders. Respect the operating system's <em>reduce motion</em> setting, and offer a
+    control on the page too.
+</p>
+<p id="motion-os-status">Checking your operating system's motion setting…</p>
+
+<div class="motion-stage" id="motion-stage">
+    <div class="motion-ball" aria-hidden="true"></div>
+</div>
+<div class="button-row">
+    <button type="button" class="button-secondary" id="motion-pause">Pause animation</button>
+</div>
+<p>
+    You can also stop <em>all</em> animation on this site with the <strong>Reduce motion</strong> button in the
+    page footer. Your choice is remembered on this device.
+</p>
+
+<p>This is the CSS that makes it work:</p>
+<code-sample label="Respecting reduced motion in CSS">
+    /* Honor the operating system setting */
+    @@media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+</code-sample>
+
+<p>
+    To turn on reduced motion: on Windows, go to <em>Settings → Accessibility → Visual effects → Animation effects</em>.
+    On macOS, go to <em>System Settings → Accessibility → Display → Reduce motion</em>.
+</p>
+
+@section Scripts {
+    <script src="~/js/seizures.js" asp-append-version="true"></script>
+}

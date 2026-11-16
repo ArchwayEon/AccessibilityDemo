@@ -1,0 +1,149 @@
+@* Principle 12 – Users are helped to avoid and correct mistakes *@
+@model RegistrationViewModel
+@{
+    var principle = (Principle)ViewData["Principle"]!;
+    var hasErrors = !ViewData.ModelState.IsValid;
+
+    // Put "Error:" at the start of the page title so screen reader users hear right away that
+    // the form was not accepted.
+    if (hasErrors)
+    {
+        ViewData["Title"] = $"Error: {principle.Title}";
+    }
+
+    // Fields in the order they appear on the form, so the error summary lists them in the same order.
+    var fieldOrder = new[] { nameof(Model.FullName), nameof(Model.Email), nameof(Model.StudentId), nameof(Model.Session), nameof(Model.Accommodations) };
+
+    bool HasError(string key) =>
+        ViewData.ModelState.TryGetValue(key, out var entry) && entry.Errors.Count > 0;
+
+    // Build aria-describedby from the hint and/or error message ids.
+    // Returning null means Razor leaves the attribute out entirely.
+    string? DescribedBy(string key, bool hasHint)
+    {
+        var ids = new List<string>();
+        if (hasHint) ids.Add($"{key}-hint");
+        if (HasError(key)) ids.Add($"{key}-error");
+        return ids.Count == 0 ? null : string.Join(' ', ids);
+    }
+
+    string? Invalid(string key) => HasError(key) ? "true" : null;
+}
+
+<h2>Try the form</h2>
+<p>
+    Submit this form empty, or with a badly formatted email or student ID, to see the error handling.
+    If everything is valid, you'll get a chance to <strong>review your answers</strong> before anything is saved,
+    and you can <strong>cancel</strong> afterward.
+</p>
+
+@if (TempData["Message"] is string message)
+{
+    <div class="success-panel" role="status">
+        <p>@message</p>
+    </div>
+}
+
+@* novalidate turns off the browser's built-in error bubbles so our own, more helpful, messages are used.
+   Validation happens on the server using the data annotations in Models/ViewModels.cs. *@
+<form asp-action="InputAssistance" method="post" novalidate class="card">
+    <h3>Register for an accessibility workshop</h3>
+
+    @if (hasErrors)
+    {
+        @* The error summary gets focus when the page loads (see wwwroot/js/site.js) and links to each field. *@
+        <div class="error-summary" id="error-summary" tabindex="-1" aria-labelledby="error-summary-title">
+            <h4 id="error-summary-title">There is a problem with your registration</h4>
+            <ul>
+                @foreach (var key in fieldOrder.Where(HasError))
+                {
+                    var target = key == nameof(Model.Session) ? "Session-0" : key;
+                    foreach (var error in ViewData.ModelState[key]!.Errors)
+                    {
+                        <li><a href="#@target">@error.ErrorMessage</a></li>
+                    }
+                }
+            </ul>
+        </div>
+    }
+
+    <p>All fields are required unless marked optional.</p>
+
+    <div class="form-group">
+        <label asp-for="FullName">Full name</label>
+        <span asp-validation-for="FullName" class="field-error" id="FullName-error"></span>
+        <input asp-for="FullName" autocomplete="name" required
+               aria-invalid="@Invalid(nameof(Model.FullName))"
+               aria-describedby="@DescribedBy(nameof(Model.FullName), false)" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email">Email address</label>
+        <span class="hint" id="Email-hint">We'll send your confirmation here. Use your university email if you have one.</span>
+        <span asp-validation-for="Email" class="field-error" id="Email-error"></span>
+        <input asp-for="Email" type="email" autocomplete="email" spellcheck="false" required
+               aria-invalid="@Invalid(nameof(Model.Email))"
+               aria-describedby="@DescribedBy(nameof(Model.Email), true)" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="StudentId">Student ID</label>
+        <span class="hint" id="StudentId-hint">The letter E followed by 8 digits, for example E00123456.</span>
+        <span asp-validation-for="StudentId" class="field-error" id="StudentId-error"></span>
+        <input asp-for="StudentId" autocomplete="off" spellcheck="false" required
+               aria-invalid="@Invalid(nameof(Model.StudentId))"
+               aria-describedby="@DescribedBy(nameof(Model.StudentId), true)" />
+        @* Context-sensitive help, right where it is needed. *@
+        <details>
+            <summary>Where do I find my student ID?</summary>
+            <p>It is printed on the front of your student ID card, under your photo. You can also find it in your student portal under <em>Personal Information</em>.</p>
+        </details>
+    </div>
+
+    @* Radio buttons are grouped with fieldset/legend so the question is read with each option. *@
+    <fieldset aria-describedby="@(HasError(nameof(Model.Session)) ? "Session-error" : null)">
+        <legend>Workshop session</legend>
+        <span asp-validation-for="Session" class="field-error" id="Session-error"></span>
+        @for (var i = 0; i < RegistrationViewModel.Sessions.Count; i++)
+        {
+            var session = RegistrationViewModel.Sessions[i];
+            <div class="radio-option">
+                <input type="radio" asp-for="Session" value="@session" id="Session-@i"
+                       aria-invalid="@Invalid(nameof(Model.Session))" />
+                <label for="Session-@i">@session</label>
+            </div>
+        }
+    </fieldset>
+
+    <div class="form-group">
+        <label asp-for="Accommodations">Accommodations needed (optional)</label>
+        <span class="hint" id="Accommodations-hint">For example: captions, a sign language interpreter, or wheelchair-accessible seating.</span>
+        <span asp-validation-for="Accommodations" class="field-error" id="Accommodations-error"></span>
+        <textarea asp-for="Accommodations" rows="3"
+                  aria-invalid="@Invalid(nameof(Model.Accommodations))"
+                  aria-describedby="@DescribedBy(nameof(Model.Accommodations), true)"></textarea>
+    </div>
+
+    <button type="submit">Continue to review</button>
+</form>
+
+<h2>What this form does</h2>
+<ul>
+    <li><strong>Visible labels</strong> connected with <code>asp-for</code>, plus <strong>hints</strong> linked with <code>aria-describedby</code>.</li>
+    <li><strong>Instructions up front:</strong> the format of the student ID is given <em>before</em> the user makes a mistake.</li>
+    <li><strong>Error messages that explain how to fix the problem</strong>, not just “Invalid input”.</li>
+    <li>An <strong>error summary</strong> at the top that receives focus and links to each field.</li>
+    <li>Errors shown next to the field, marked with the word “Error:”, a thicker border, and <code>aria-invalid="true"</code>, not color alone.</li>
+    <li>The user's answers are <strong>kept</strong> when there is an error, so they don't have to start over.</li>
+    <li><code>autocomplete</code> values (<code>name</code>, <code>email</code>) so browsers can fill in known information.</li>
+    <li><strong>Context-sensitive help</strong> (“Where do I find my student ID?”).</li>
+    <li>A <strong>review step</strong> before submitting, and a way to <strong>cancel</strong> afterward.</li>
+</ul>
+
+<code-sample label="One accessible form field">
+    <label for="StudentId">Student ID</label>
+    <span class="hint" id="StudentId-hint">The letter E followed by 8 digits, for example E00123456.</span>
+    <span class="field-error" id="StudentId-error">Your student ID must be the letter E followed by 8 digits.</span>
+    <input id="StudentId" name="StudentId" aria-invalid="true"
+           aria-describedby="StudentId-hint StudentId-error">
+</code-sample>

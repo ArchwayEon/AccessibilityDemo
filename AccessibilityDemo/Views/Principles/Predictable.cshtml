@@ -1,0 +1,78 @@
+@* Principle 11 – Content appears and operates in predictable ways *@
+
+<h2>Consistent navigation</h2>
+<p>
+    The header, navigation menu, and footer are in the same place, in the same order, on every page of this site.
+    That's not luck: they all come from a single file, <code>Views/Shared/_Layout.cshtml</code>, and the menu is generated
+    from one list, <code>Models/PrincipleCatalog.cs</code>. Using shared layouts and partial views makes consistency the default.
+</p>
+
+<h2>Consistent labels</h2>
+<p>
+    Components that do the same thing should have the same name everywhere. On this site the search button is always
+    “Search” and the menu item for this page is always “Predictable behavior”. If one page said “Search”, another
+    said “Find”, and a third used only a magnifying-glass icon, users would wonder whether they did different things.
+</p>
+
+<h2>No changes without consent</h2>
+<p>
+    Changing a form field, or moving focus onto something, should never by itself submit a form, open a new window,
+    or move to a new page. Users choose when that happens, usually by pressing a button.
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: wait for the user to press Go</h3>
+        <form method="get" asp-action="Go">
+            <div class="form-group">
+                <label for="jump-good">Jump to a principle</label>
+                <select id="jump-good" name="target">
+                    @foreach (var p in PrincipleCatalog.All)
+                    {
+                        <option value="@p.Action">@p.ShortTitle</option>
+                    }
+                </select>
+            </div>
+            <button type="submit">Go</button>
+        </form>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: navigate when the selection changes (live example)</h3>
+        <div class="form-group">
+            <label for="jump-bad">Jump to a principle</label>
+            <select id="jump-bad">
+                <option value="">Choose…</option>
+                @foreach (var p in PrincipleCatalog.All)
+                {
+                    <option value="@Url.Action(p.Action)">@p.ShortTitle</option>
+                }
+            </select>
+        </div>
+        <p>
+            Focus this list with <kbd>Tab</kbd> and press the down arrow. In many browsers the page changes immediately,
+            before a keyboard user can reach the option they wanted.
+        </p>
+    </div>
+</div>
+<code-sample kind="bad" label="Context change on input">
+    <select onchange="location = this.value">…</select>
+    <input onfocus="this.form.submit()">
+</code-sample>
+
+<h2>Warn before opening a new window</h2>
+<p>
+    Opening a new tab takes users out of their current context, and the Back button stops working.
+    Avoid it, or say so in the link text:
+</p>
+<p>
+    <a href="https://www.w3.org/WAI/" target="_blank" rel="noopener">W3C Web Accessibility Initiative (opens in a new tab)</a>
+</p>
+
+<h2>Consistent help</h2>
+<p>
+    If a site offers help (a contact link, chat, or FAQ), it should be in the same relative place on every page.
+    On this site the link back to the W3C source and the site map are always in the footer.
+</p>
+
+@section Scripts {
+    <script src="~/js/predictable.js" asp-append-version="true"></script>
+}

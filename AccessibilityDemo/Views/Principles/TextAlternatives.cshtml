@@ -1,0 +1,164 @@
+@* Principle 1 – Text alternatives for non-text content *@
+
+<h2>Informative images</h2>
+<p>
+    If an image conveys information, its <code>alt</code> text should give the same information.
+    Describe what matters in this context in a short phrase. Don't start with “Image of…”; screen readers
+    already announce that it is an image.
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: describe the content</h3>
+        <img src="~/images/campus.svg" width="320" height="180"
+             alt="Cartoon of a brick building labeled Computing on a sunny day" style="max-width:100%;height:auto" />
+        <code-sample kind="good" label="Good alt text">
+            <img src="campus.svg"
+                 alt="Cartoon of a brick building labeled Computing on a sunny day">
+        </code-sample>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: use file names or vague words</h3>
+        <code-sample kind="bad" label="Bad alt text">
+            <img src="campus.svg">                  <!-- no alt: reader says "campus dot svg" -->
+            <img src="campus.svg" alt="image">      <!-- says nothing useful -->
+            <img src="campus.svg" alt="campus.svg"> <!-- file name -->
+        </code-sample>
+    </div>
+</div>
+
+<h2>Decorative images</h2>
+<p>
+    Images that are purely decorative should have an <strong>empty</strong> <code>alt=""</code> so screen
+    readers skip them. Leaving <code>alt</code> off entirely is <em>not</em> the same thing: many screen readers
+    then read the file name instead. The logo in this site's header is decorative too, because the link
+    next to it already says “Accessibility Principles Demo”.
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: use an empty alt</h3>
+        <p><img src="~/images/divider.svg" alt="" width="300" height="16" style="max-width:100%;height:auto" /></p>
+        <code-sample kind="good" label="Decorative image">
+            <img src="divider.svg" alt="">
+        </code-sample>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: describe decoration</h3>
+        <code-sample kind="bad" label="Over-described decoration">
+            <img src="divider.svg" alt="A wavy grey line decoration">
+        </code-sample>
+        <p>This adds noise without adding information.</p>
+    </div>
+</div>
+
+<h2>Icons and icon-only buttons</h2>
+<p>
+    A button that only shows an icon still needs an accessible name. Hide the icon from assistive technology
+    with <code>aria-hidden="true"</code> and give the button text, either visually hidden or as an
+    <code>aria-label</code>.
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: give the button a name</h3>
+        <p>
+            <button type="button" class="button-secondary">
+                <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 3h6l1 2h4v2H4V5h4l1-2zm-3 6h12l-1 12H7L6 9z" />
+                </svg>
+                <span class="visually-hidden">Delete assignment</span>
+            </button>
+            A screen reader announces “Delete assignment, button”.
+        </p>
+        <code-sample kind="good" label="Icon button with a name">
+            <button type="button">
+                <svg aria-hidden="true" focusable="false">…</svg>
+                <span class="visually-hidden">Delete assignment</span>
+            </button>
+        </code-sample>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: leave the button nameless (live example)</h3>
+        <p>
+            <button type="button" class="button-secondary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 3h6l1 2h4v2H4V5h4l1-2zm-3 6h12l-1 12H7L6 9z" />
+                </svg>
+            </button>
+            A screen reader announces only “button”. Delete what?
+        </p>
+        <code-sample kind="bad" label="Icon button without a name">
+            <button type="button">
+                <svg>…</svg>
+            </button>
+        </code-sample>
+    </div>
+</div>
+
+<h2>Charts, diagrams, and illustrations</h2>
+<p>
+    Complex images need two things: a short <code>alt</code> that says what the image is, and a longer
+    description of the data nearby. Here a <code>&lt;figure&gt;</code> and <code>&lt;figcaption&gt;</code>
+    summarize the key point, and the full data is available as a real table.
+</p>
+<figure>
+    <img src="~/images/chart.svg" width="480" height="260" style="max-width:100%;height:auto"
+         alt="Bar chart of how students find information on a long page. Details follow in the caption and table." />
+    <figcaption>
+        <strong>Figure 1.</strong> Jumping by headings was the most popular method (54 of 120 students),
+        nearly as many as all other methods combined. This is one reason good heading structure matters.
+    </figcaption>
+</figure>
+<details>
+    <summary>Show the chart data as a table</summary>
+    <div class="table-wrap">
+        <table>
+            <caption>How students find information on a long page (sample data, 120 responses)</caption>
+            <thead>
+                <tr><th scope="col">Method</th><th scope="col">Students</th></tr>
+            </thead>
+            <tbody>
+                <tr><th scope="row">Jump by headings</th><td class="num">54</td></tr>
+                <tr><th scope="row">Find in page (Ctrl+F)</th><td class="num">31</td></tr>
+                <tr><th scope="row">Scroll and skim</th><td class="num">23</td></tr>
+                <tr><th scope="row">List of links</th><td class="num">12</td></tr>
+            </tbody>
+        </table>
+    </div>
+</details>
+
+<h2>Audio and video files</h2>
+<p>
+    Give non-text media a brief text description so people know what it is before they play it,
+    for example: “Video (2 minutes, captioned): a tour of the accessibility testing lab.”
+    The full alternatives (captions, transcripts, and audio description) are covered on the
+    <a asp-action="Captions">captions and multimedia page</a>.
+</p>
+
+<h2>Labels for form controls</h2>
+<p>
+    Every input needs a label that is programmatically connected to it. With <code>&lt;label for="…"&gt;</code>,
+    clicking the label also focuses the field, which gives mouse and touch users a bigger target.
+    In ASP.NET Core, <code>&lt;label asp-for="Email"&gt;</code> generates this for you.
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: use a visible, connected label</h3>
+        <div class="form-group">
+            <label for="ta-good-email">Email address</label>
+            <input type="email" id="ta-good-email" autocomplete="email" />
+        </div>
+        <code-sample kind="good" label="Labeled input">
+            <label for="email">Email address</label>
+            <input type="email" id="email" autocomplete="email">
+        </code-sample>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: rely on placeholder text (live example)</h3>
+        <div class="form-group">
+            <input type="email" placeholder="Email address" />
+        </div>
+        <p>The placeholder disappears as soon as you type, often has poor contrast, and is not a reliable label.</p>
+        <code-sample kind="bad" label="Placeholder-only input">
+            <input type="email" placeholder="Email address">
+        </code-sample>
+    </div>
+</div>

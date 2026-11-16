@@ -1,0 +1,24 @@
+@* Step 3 of the InputAssistance form: confirmation, with a way to reverse it. *@
+@{
+    ViewData["Title"] = "Registration complete";
+    ViewData["Subpage"] = true;
+    var name = TempData["RegisteredName"] as string;
+    var session = TempData["RegisteredSession"] as string;
+    TempData.Keep();   // keep the values so the page still works if it is refreshed
+}
+
+<h1>Registration complete</h1>
+
+<div class="success-panel">
+    <p><strong>Thank you, @name.</strong> You are registered for:</p>
+    <p>@session</p>
+    <p>(This is a demo, so no email was actually sent and nothing was saved to a database.)</p>
+</div>
+
+<h2>Changed your mind?</h2>
+<p>You can cancel this registration now. This can't be undone, but you can always register again.</p>
+<form asp-action="CancelRegistration" method="post">
+    <button type="submit" class="button-danger">Cancel my registration</button>
+</form>
+
+<p><a asp-action="InputAssistance">Back to the avoiding mistakes principle</a></p>

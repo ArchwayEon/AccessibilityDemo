@@ -1,0 +1,42 @@
+@model SearchViewModel
+@{
+    // The page title includes the query and result count, so screen reader users
+    // hear the outcome as soon as the page loads.
+    ViewData["Title"] = string.IsNullOrEmpty(Model.Query)
+        ? "Search"
+        : $"{Model.Results.Count} result{(Model.Results.Count == 1 ? "" : "s")} for “{Model.Query}”";
+}
+
+<h1>Search the principles</h1>
+
+<form method="get" asp-action="Search" role="search" aria-label="Search the principles (page)">
+    <div class="form-group">
+        <label for="page-search-q">Search for a word or phrase</label>
+        <span class="hint" id="page-search-hint">For example: contrast, keyboard, captions, or error.</span>
+        <input type="search" id="page-search-q" name="q" value="@Model.Query" aria-describedby="page-search-hint" />
+    </div>
+    <button type="submit">Search</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.Query))
+{
+    <h2>@(Model.Results.Count) result@(Model.Results.Count == 1 ? "" : "s") for “@Model.Query”</h2>
+
+    @if (Model.Results.Count == 0)
+    {
+        <p>No principles matched. Check the spelling, try a shorter word, or browse the
+            <a asp-action="SiteMap">site map</a>.</p>
+    }
+    else
+    {
+        <ol>
+            @foreach (var p in Model.Results)
+            {
+                <li>
+                    <a asp-controller="Principles" asp-action="@p.Action">@p.Title</a>
+                    <br />@p.Summary
+                </li>
+            }
+        </ol>
+    }
+}

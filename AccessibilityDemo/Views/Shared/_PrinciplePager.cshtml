@@ -1,0 +1,23 @@
+@model Principle
+@*
+    Previous/next links make the order through the content clear.
+    The link text says WHERE it goes ("Next: Keyboard access"), not just "Next".
+*@
+@{
+    var prev = PrincipleCatalog.Previous(Model);
+    var next = PrincipleCatalog.Next(Model);
+}
+<nav class="pager" aria-label="Previous and next principle">
+    @if (prev is not null)
+    {
+        <a class="prev" asp-controller="Principles" asp-action="@prev.Action">
+            <span aria-hidden="true">←</span> Previous: @prev.ShortTitle
+        </a>
+    }
+    @if (next is not null)
+    {
+        <a class="next" asp-controller="Principles" asp-action="@next.Action">
+            Next: @next.ShortTitle <span aria-hidden="true">→</span>
+        </a>
+    }
+</nav>

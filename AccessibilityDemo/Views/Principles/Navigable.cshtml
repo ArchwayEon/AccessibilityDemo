@@ -1,0 +1,114 @@
+@* Principle 8 – Users can easily navigate, find content, and determine where they are *@
+
+<h2>Clear page titles</h2>
+<p>
+    The <code>&lt;title&gt;</code> is the first thing a screen reader announces and the text on the browser tab.
+    Make every title unique and put the specific part first. This page's title is:
+</p>
+<p><strong id="current-title"></strong></p>
+<p>
+    In this app the title is built in <code>_Layout.cshtml</code> from <code>ViewData["Title"]</code> or the principle's name.
+    Search results and form errors put the important information in the title too (for example
+    “3 results for ‘keyboard’” or “Error: Register for a workshop”).
+</p>
+
+<h2>Descriptive headings</h2>
+<p>
+    Headings describe the topic of each section and nest in order. Screen reader users press <kbd>H</kbd> (NVDA, JAWS)
+    or use the rotor (VoiceOver) to jump between them. Here is the heading outline of this page, generated from the DOM:
+</p>
+<p><button type="button" class="button-secondary" id="outline-button" aria-expanded="false" aria-controls="outline">Show heading outline</button></p>
+<div id="outline" class="card" hidden></div>
+
+<h2>More than one way to find a page</h2>
+<p>This site offers several ways to find content:</p>
+<ul>
+    <li>the <strong>navigation menu</strong>, the same on every page;</li>
+    <li>the <strong>search box</strong> in the header;</li>
+    <li>a <a asp-controller="Home" asp-action="SiteMap">site map</a>;</li>
+    <li><strong>previous and next links</strong> at the bottom of each principle;</li>
+    <li>links between related pages in the content itself.</li>
+</ul>
+
+<h2>Where am I?</h2>
+<p>Users are told their current location in three ways:</p>
+<ul>
+    <li>the <strong>breadcrumb trail</strong> at the top of the page (Home › …);</li>
+    <li>the current item in the navigation menu is bold with a bar and has <code>aria-current="page"</code>,
+        so screen readers say “current page”;</li>
+    <li>“Principle 8 of 13” above the heading.</li>
+</ul>
+<code-sample label="Marking the current page">
+    <nav aria-label="Breadcrumb">
+        <ol>
+            <li><a href="/">Home</a></li>
+            <li><span aria-current="page">Navigation</span></li>
+        </ol>
+    </nav>
+</code-sample>
+
+<h2>Skip repeated blocks</h2>
+<p>
+    Reload the page and press <kbd>Tab</kbd> once. A <strong>Skip to main content</strong> link appears. It lets keyboard
+    users jump past the header and the 15-link menu, which they would otherwise have to tab through on every page.
+    Landmarks (<code>&lt;main&gt;</code>, <code>&lt;nav&gt;</code>) give screen reader users the same shortcut.
+</p>
+<code-sample label="Skip link">
+    <body>
+        <a class="skip-link" href="#main">Skip to main content</a>
+        <header>…</header>
+        <nav>…</nav>
+        <main id="main" tabindex="-1">…</main>
+    </body>
+</code-sample>
+
+<h2>Visible focus in a logical order</h2>
+<p>
+    Sighted keyboard users need to see where focus is. Compare these two sets of links using <kbd>Tab</kbd>:
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: keep a strong focus indicator</h3>
+        <p><a href="#focus-demo-good-1" id="focus-demo-good-1">First link</a> · <a href="#focus-demo-good-2" id="focus-demo-good-2">Second link</a></p>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: remove the outline (live example)</h3>
+        <p class="no-focus-demo"><a href="#focus-demo-bad-1" id="focus-demo-bad-1">First link</a> · <a href="#focus-demo-bad-2" id="focus-demo-bad-2">Second link</a></p>
+        <code-sample kind="bad" label="Removing focus outlines">
+            a:focus { outline: none; }
+        </code-sample>
+    </div>
+</div>
+<p>
+    Focus order should follow the visual reading order. Keep the source order the same as the visual order and avoid
+    positive <code>tabindex</code> values, which jump elements to the front of the tab order:
+</p>
+<code-sample kind="bad" label="Positive tabindex">
+    <button tabindex="3">Cancel</button>
+    <button tabindex="1">Submit</button>   <!-- focus order no longer matches what users see -->
+</code-sample>
+
+<h2>Link purpose</h2>
+<p>
+    Screen reader users often pull up a list of all links on a page. “Click here” or “Read more” repeated ten times
+    tells them nothing.
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: say where the link goes</h3>
+        <p>Read the <a asp-action="Keyboard">guide to keyboard accessibility</a>.</p>
+        <p>
+            <a asp-action="Captions">Read more<span class="visually-hidden"> about captions and transcripts</span></a>
+            (the hidden text gives screen readers the full purpose).
+        </p>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: use vague link text</h3>
+        <p>To learn about keyboard accessibility, <a asp-action="Keyboard">click here</a>.</p>
+        <p><a asp-action="Captions">Read more</a></p>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/navigable.js" asp-append-version="true"></script>
+}

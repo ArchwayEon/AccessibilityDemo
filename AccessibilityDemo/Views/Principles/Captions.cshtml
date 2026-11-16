@@ -1,0 +1,101 @@
+@* Principle 2 – Captions and other alternatives for multimedia *@
+@{
+    var hasVideo = ViewData["HasVideo"] is true;
+}
+
+<h2>Know the alternatives</h2>
+<dl>
+    <dt><dfn>Captions</dfn></dt>
+    <dd>Text of the speech <em>and</em> important sounds (for example “[audience laughs]”), synchronized with the video.
+        For people who are Deaf or hard of hearing, or anyone watching with the sound off.</dd>
+
+    <dt><dfn>Transcript</dfn></dt>
+    <dd>All of the audio as text on the page. Required for audio-only content like podcasts. Transcripts are also searchable
+        and help people who read faster than they listen.</dd>
+
+    <dt><dfn>Audio description</dfn></dt>
+    <dd>Narration that describes important visual details (“She points to the error on the screen”) for people who are blind
+        or have low vision.</dd>
+
+    <dt><dfn>Sign language interpretation</dfn></dt>
+    <dd>A signer shown alongside the video. For many Deaf people sign language is their first language, so it can be
+        easier to follow than captions.</dd>
+</dl>
+
+<h2>Captioned video player</h2>
+@if (hasVideo)
+{
+    <p>Use the player's <strong>CC</strong> menu to turn captions or descriptions on and off. Nothing plays until you press play.</p>
+    <div class="video-wrap">
+        @* No autoplay. The <track> elements add captions and text descriptions. *@
+        <video controls preload="metadata" aria-describedby="video-desc">
+            <source src="~/media/sample.mp4" type="video/mp4" />
+            <track kind="captions" src="~/media/sample.en.vtt" srclang="en" label="English captions" default />
+            <track kind="descriptions" src="~/media/sample.descriptions.en.vtt" srclang="en" label="English audio descriptions" />
+            <p>Your browser cannot play this video. <a href="~/media/sample.mp4">Download the video</a> or read the transcript below.</p>
+        </video>
+        <p id="video-desc">Video: an interview about why accessibility matters. A transcript follows.</p>
+    </div>
+}
+else
+{
+    <div class="callout">
+        <p><strong>No sample video is installed yet.</strong> To see a working captioned player, copy any short MP4 file to
+            <code>wwwroot/media/sample.mp4</code> and reload this page. The caption file
+            <code>wwwroot/media/sample.en.vtt</code> is already included; edit its timings to match your video.</p>
+    </div>
+}
+
+<p>This is the markup the player uses:</p>
+<code-sample label="Video with captions and descriptions">
+    <video controls preload="metadata">
+        <source src="sample.mp4" type="video/mp4">
+        <track kind="captions" src="sample.en.vtt" srclang="en" label="English captions" default>
+        <track kind="descriptions" src="sample.descriptions.en.vtt" srclang="en" label="English audio descriptions">
+    </video>
+</code-sample>
+
+<p>Captions are stored in a <abbr title="Web Video Text Tracks">WebVTT</abbr> file, which is plain text:</p>
+<code-sample label="WebVTT caption file">
+    WEBVTT
+
+    00:00:00.000 --> 00:00:04.000
+    <v Host>Welcome back to Tech Talk. Today we're talking about accessibility.</v>
+
+    00:00:04.000 --> 00:00:06.500
+    [upbeat music fades]
+</code-sample>
+
+<h2>Transcript example</h2>
+<p>
+    A transcript should identify speakers and include meaningful sounds. Putting it in a
+    <code>&lt;details&gt;</code> element keeps the page short while still making it easy to find.
+</p>
+<details>
+    <summary>Read the transcript: “Why accessibility matters” radio interview (about 2 minutes)</summary>
+    <div>
+        <p>[Upbeat theme music, then fades]</p>
+        <p><strong>Host:</strong> Welcome back to Tech Talk. Today we're talking about web accessibility with a software developer who tests websites for a living.</p>
+        <p><strong>Guest:</strong> Thanks for having me. Accessibility means people with disabilities can perceive, understand, navigate, and use the web.</p>
+        <p><strong>Host:</strong> Who benefits?</p>
+        <p><strong>Guest:</strong> Around one in four adults in the U.S. has some type of disability. But captions also help someone watching on a noisy bus, and keyboard support helps a power user who never touches a mouse.</p>
+        <p><strong>Host:</strong> [laughs] I'm guilty of that one.</p>
+        <p><strong>Guest:</strong> Most of us are! My advice to students is to test with a keyboard and a screen reader early. It's much cheaper than fixing problems at the end.</p>
+        <p><strong>Host:</strong> Great advice. Thanks for joining us.</p>
+        <p>[Theme music returns]</p>
+    </div>
+</details>
+
+<h2>Sign language interpretation</h2>
+<p>
+    Sign language is usually shown as a picture-in-picture video or a second video beside the main one.
+    It is a requirement at WCAG level AAA, and organizations that serve Deaf communities often provide it.
+    If you add one, give the interpreter's video enough size and contrast to see hand shapes and facial expressions clearly.
+</p>
+
+<h2>Don't</h2>
+<ul>
+    <li>Don't rely on auto-generated captions without checking them; they often get names and technical terms wrong.</li>
+    <li>Don't autoplay media with sound. (See <a asp-action="Distinguishable">easier to see and hear</a>.)</li>
+    <li>Don't put captions only inside the video image (“burned-in” or open captions) if you can provide a text track instead; text tracks can be resized and restyled.</li>
+</ul>

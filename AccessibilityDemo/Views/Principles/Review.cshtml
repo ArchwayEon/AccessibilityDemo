@@ -1,0 +1,40 @@
+@* Step 2 of the InputAssistance form: review before submitting. *@
+@model RegistrationViewModel
+@{
+    ViewData["Title"] = "Check your answers";
+    ViewData["Subpage"] = true;
+}
+
+<h1>Check your answers</h1>
+<p>
+    <strong>Nothing has been submitted yet.</strong> Review your registration below. If something is wrong,
+    choose <strong>Change my answers</strong>; your entries will be kept.
+</p>
+
+<dl class="review card">
+    <dt>Full name</dt>
+    <dd>@Model.FullName</dd>
+    <dt>Email address</dt>
+    <dd>@Model.Email</dd>
+    <dt>Student ID</dt>
+    <dd>@Model.StudentId?.ToUpperInvariant()</dd>
+    <dt>Workshop session</dt>
+    <dd>@Model.Session</dd>
+    <dt>Accommodations</dt>
+    <dd>@(string.IsNullOrWhiteSpace(Model.Accommodations) ? "None requested" : Model.Accommodations)</dd>
+</dl>
+
+<form asp-action="Confirm" method="post">
+    <input type="hidden" asp-for="FullName" />
+    <input type="hidden" asp-for="Email" />
+    <input type="hidden" asp-for="StudentId" />
+    <input type="hidden" asp-for="Session" />
+    <input type="hidden" asp-for="Accommodations" />
+
+    <div class="button-row">
+        <button type="submit">Confirm registration</button>
+        @* formaction sends the same data back to the form instead of to Confirm. *@
+        <button type="submit" class="button-secondary" name="command" value="edit"
+                formaction="@Url.Action("InputAssistance")">Change my answers</button>
+    </div>
+</form>

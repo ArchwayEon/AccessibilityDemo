@@ -1,0 +1,26 @@
+@*
+    Breadcrumbs tell users where they are within the site (Navigable).
+    • Wrapped in <nav> with its own label so it is a distinct landmark.
+    • An ordered list, because the order matters.
+    • The current page is marked with aria-current="page" and is not a link.
+*@
+@{
+    var principle = ViewData["Principle"] as Principle;
+    var isSubpage = ViewData["Subpage"] is true;
+    var title = ViewData["Title"] as string ?? principle?.Title;
+    var isHome = ViewContext.RouteData.Values["controller"]?.ToString() == "Home"
+                 && ViewContext.RouteData.Values["action"]?.ToString() == "Index";
+}
+@if (!isHome)
+{
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ol>
+            <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+            @if (principle is not null && isSubpage)
+            {
+                <li><a asp-controller="Principles" asp-action="@principle.Action">@principle.Title</a></li>
+            }
+            <li><span aria-current="page">@title</span></li>
+        </ol>
+    </nav>
+}

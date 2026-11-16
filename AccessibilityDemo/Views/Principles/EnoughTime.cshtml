@@ -1,0 +1,88 @@
+@* Principle 6 – Users have enough time to read and use the content *@
+
+<h2>Session time limits</h2>
+<p>
+    Many sites sign you out after a period of inactivity. That's sometimes necessary for security, but users must be
+    <strong>warned</strong> before time runs out and allowed to <strong>extend</strong> it (with a simple action, at least
+    10 times), and they must not lose their work if it does expire.
+</p>
+<p>
+    This simulation uses a 60-second “session” so you can see the whole cycle. The warning dialog appears with
+    20 seconds left. Type something in the box, then let the session expire to see that your text is kept.
+</p>
+
+<div class="card" id="session-demo">
+    <h3>Simulated session</h3>
+    <p>
+        Time remaining:
+        @* The visible countdown is NOT a live region; announcing it every second would be unbearable.
+           Screen reader users get one announcement (the warning dialog) instead. *@
+        <span class="timer-display" id="session-time">1:00</span>
+    </p>
+    <div class="button-row">
+        <button type="button" id="session-start">Start the session</button>
+        <button type="button" class="button-secondary" id="session-off" aria-pressed="false">Turn off the time limit</button>
+    </div>
+
+    <div class="form-group">
+        <label for="session-draft">Draft a discussion post</label>
+        <span class="hint" id="session-draft-hint">Your text is saved in this browser as you type.</span>
+        <textarea id="session-draft" aria-describedby="session-draft-hint"></textarea>
+    </div>
+
+    <div id="session-expired" class="callout callout-warning" hidden tabindex="-1">
+        <p><strong>Your session has expired.</strong> Don't worry: your draft has been saved.</p>
+        <button type="button" id="session-reauth">Sign in again</button>
+    </div>
+</div>
+
+<dialog id="session-warning" aria-labelledby="session-warning-title" aria-describedby="session-warning-desc">
+    <h3 id="session-warning-title">Your session is about to expire</h3>
+    <p id="session-warning-desc">You will be signed out in about 20 seconds. Do you need more time?</p>
+    <div class="button-row">
+        <button type="button" id="session-extend">Yes, give me more time</button>
+        <button type="button" class="button-secondary" id="session-dismiss">No, sign me out</button>
+    </div>
+</dialog>
+
+<h2>Moving, blinking, and scrolling content</h2>
+<p>
+    Anything that moves automatically for more than 5 seconds needs a way to pause, stop, or hide it.
+    Moving text is hard to read for people who read slowly, and distracting for people with attention disorders.
+</p>
+<div class="ticker" id="ticker" aria-hidden="true">
+    <span class="ticker-track">
+        CS Department news: Accessibility lab opens Monday • Hackathon registration now open • Guest lecture on screen readers Thursday at 3 PM •
+    </span>
+</div>
+<p><button type="button" id="ticker-toggle" class="button-secondary">Pause headlines</button></p>
+<p>
+    The moving ticker is hidden from screen readers (<code>aria-hidden="true"</code>) because the same headlines
+    are available as a plain list:
+</p>
+<ul>
+    <li>Accessibility lab opens Monday</li>
+    <li>Hackathon registration now open</li>
+    <li>Guest lecture on screen readers Thursday at 3 PM</li>
+</ul>
+
+<h2>Postpone interruptions</h2>
+<p>
+    Pop-ups and notifications pull attention away and can be hard to dismiss. Let users postpone non-urgent
+    interruptions (emergencies are the exception).
+</p>
+<div class="card">
+    <div class="button-row">
+        <button type="button" class="button-secondary" id="notify-postpone" aria-pressed="false">Postpone notifications</button>
+        <button type="button" id="notify-send">Simulate a new notification</button>
+    </div>
+    <p role="status" id="notify-status"></p>
+    <div class="toast" id="notify-toast" hidden>
+        <span id="notify-text"></span>
+        <button type="button" class="button-secondary" id="notify-close">Dismiss notification</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/enough-time.js" asp-append-version="true"></script>
+}

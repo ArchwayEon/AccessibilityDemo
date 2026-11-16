@@ -1,0 +1,33 @@
+WEBVTT
+
+NOTE
+Sample captions for "Why accessibility matters". Adjust the timings to match
+the video you place at wwwroot/media/sample.mp4.
+
+00:00:00.000 --> 00:00:03.000
+[Upbeat theme music]
+
+00:00:03.000 --> 00:00:07.500
+<v Host>Welcome back to Tech Talk. Today we're talking about web accessibility.</v>
+
+00:00:07.500 --> 00:00:12.000
+<v Guest>Accessibility means people with disabilities can perceive,
+understand, navigate, and use the web.</v>
+
+00:00:12.000 --> 00:00:14.000
+<v Host>Who benefits?</v>
+
+00:00:14.000 --> 00:00:19.000
+<v Guest>Around one in four adults in the U.S. has some type of disability.</v>
+
+00:00:19.000 --> 00:00:24.000
+<v Guest>But captions also help someone watching on a noisy bus.</v>
+
+00:00:24.000 --> 00:00:26.000
+[Host laughs]
+
+00:00:26.000 --> 00:00:31.000
+<v Guest>Test with a keyboard and a screen reader early. It's much cheaper than fixing problems at the end.</v>
+
+00:00:31.000 --> 00:00:34.000
+[Theme music returns]

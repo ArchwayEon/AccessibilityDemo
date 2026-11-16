@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 260" width="480" height="260" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="480" height="260" fill="#ffffff"/>
+  <text x="240" y="24" text-anchor="middle" font-size="16" font-weight="700" fill="#1b1b1b">How do you find information on a long page?</text>
+  <g font-size="13" fill="#1b1b1b">
+    <text x="140" y="68" text-anchor="end">Jump by headings</text>
+    <rect x="150" y="54" width="270" height="22" fill="#0b5cad"/>
+    <text x="426" y="70">54</text>
+    <text x="140" y="118" text-anchor="end">Find in page (Ctrl+F)</text>
+    <rect x="150" y="104" width="155" height="22" fill="#0b5cad"/>
+    <text x="311" y="120">31</text>
+    <text x="140" y="168" text-anchor="end">Scroll and skim</text>
+    <rect x="150" y="154" width="115" height="22" fill="#0b5cad"/>
+    <text x="271" y="170">23</text>
+    <text x="140" y="218" text-anchor="end">List of links</text>
+    <rect x="150" y="204" width="60" height="22" fill="#0b5cad"/>
+    <text x="216" y="220">12</text>
+  </g>
+  <line x1="150" y1="44" x2="150" y2="236" stroke="#4a4a4a"/>
+  <text x="240" y="252" text-anchor="middle" font-size="12" fill="#4a4a4a">Number of students (sample data, 120 responses)</text>
+</svg>

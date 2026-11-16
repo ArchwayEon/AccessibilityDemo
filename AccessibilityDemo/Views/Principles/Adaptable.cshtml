@@ -1,0 +1,112 @@
+@* Principle 3 – Content can be presented in different ways *@
+
+<p>
+    Assistive technology can only re-present content (read it aloud, list its headings, enlarge it, restyle it)
+    if the HTML says <em>what</em> each piece of content is. Looking right is not enough.
+</p>
+
+<h2>Headings</h2>
+<p>
+    Use real heading elements in order (<code>h1</code> → <code>h2</code> → <code>h3</code>), not bold text.
+    Screen reader users often jump from heading to heading to skim a page.
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: use heading elements</h3>
+        <code-sample kind="good" label="Semantic headings">
+            <h2>Office hours</h2>
+            <p>Tuesdays and Thursdays, 2–4 PM.</p>
+        </code-sample>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: fake headings with style</h3>
+        <code-sample kind="bad" label="Fake heading">
+            <div style="font-size:24px; font-weight:bold">Office hours</div>
+            <p>Tuesdays and Thursdays, 2–4 PM.</p>
+        </code-sample>
+        <p>It looks the same, but a screen reader's heading list will not include it.</p>
+    </div>
+</div>
+
+<h2>Lists</h2>
+<p>
+    Use <code>&lt;ol&gt;</code> when order matters and <code>&lt;ul&gt;</code> when it doesn't. A screen reader announces
+    “list, 4 items”, so users know how much is coming. Here is a real ordered list:
+</p>
+<ol>
+    <li>Unplug your mouse.</li>
+    <li>Press <kbd>Tab</kbd> to move through the page.</li>
+    <li>Press <kbd>Enter</kbd> or <kbd>Space</kbd> to activate things.</li>
+    <li>Note anything you couldn't reach or couldn't see.</li>
+</ol>
+
+<h2>Data tables</h2>
+<p>
+    Use <code>&lt;table&gt;</code> for data, never for layout. Give it a <code>&lt;caption&gt;</code> and mark header cells with
+    <code>&lt;th scope="col"&gt;</code> or <code>scope="row"</code>. A screen reader then announces the header for each cell,
+    for example “Thursday, Topic, Screen readers”.
+</p>
+<div class="table-wrap">
+    <table>
+        <caption>Accessibility unit schedule</caption>
+        <thead>
+            <tr>
+                <th scope="col">Day</th>
+                <th scope="col">Topic</th>
+                <th scope="col">Lab</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><th scope="row">Monday</th><td>POUR principles</td><td>Audit a page with axe</td></tr>
+            <tr><th scope="row">Wednesday</th><td>Keyboard and focus</td><td>Unplug the mouse</td></tr>
+            <tr><th scope="row">Friday</th><td>Screen readers</td><td>NVDA or Narrator walkthrough</td></tr>
+        </tbody>
+    </table>
+</div>
+<code-sample label="Accessible table markup">
+    <table>
+        <caption>Accessibility unit schedule</caption>
+        <thead>
+            <tr><th scope="col">Day</th><th scope="col">Topic</th></tr>
+        </thead>
+        <tbody>
+            <tr><th scope="row">Monday</th><td>POUR principles</td></tr>
+        </tbody>
+    </table>
+</code-sample>
+
+<h2>Landmarks and input fields</h2>
+<p>
+    Landmark elements (<code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>,
+    <code>&lt;footer&gt;</code>) let users jump between regions of the page. Every page on this site uses them;
+    see <code>Views/Shared/_Layout.cshtml</code>. Form inputs should use the correct <code>type</code>
+    (<code>email</code>, <code>tel</code>, <code>number</code>) and <code>autocomplete</code> value so browsers and
+    assistive technology know what they are for. The <a asp-action="InputAssistance">registration form</a> shows this.
+</p>
+
+<h2>Meaningful sequence and instructions</h2>
+<p>
+    Content should make sense when read in source order, without the visual layout. Instructions should not
+    depend only on shape, color, size, position, or sound.
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: refer to the label</h3>
+        <p>“When you've finished, select <strong>Submit registration</strong>.”</p>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: rely on position or color</h3>
+        <p>“When you've finished, click the green button on the right.”</p>
+        <p>On a phone the button may be below; a screen reader user can't see it is green.</p>
+    </div>
+</div>
+
+<h2>Let users customize the presentation</h2>
+<p>Because this site uses semantic HTML, it still works when users change how it looks. Try these:</p>
+<ul>
+    <li><strong>Dark mode:</strong> switch your operating system to dark mode. This site follows it with <code>prefers-color-scheme</code>.</li>
+    <li><strong>Reader view:</strong> open this page in Firefox or Edge reader view (<kbd>F9</kbd> in Edge).</li>
+    <li><strong>No styles:</strong> in Firefox, choose <em>View → Page Style → No Style</em>. The page still reads in a sensible order.</li>
+    <li><strong>High contrast:</strong> on Windows, turn on a <em>Contrast theme</em> (Settings → Accessibility). This site's CSS handles <code>forced-colors</code>.</li>
+    <li><strong>Larger text:</strong> raise your browser's default font size. Everything here is sized in <code>rem</code>, so it scales.</li>
+</ul>

@@ -1,0 +1,15 @@
+@model Principle
+@* Shown at the top of every principle page. There is exactly one <h1> per page. *@
+<p class="eyebrow">Principle @Model.Number of @PrincipleCatalog.All.Count · WCAG group: @Model.Group</p>
+<h1>@Model.Title</h1>
+<p class="lead">@Model.Summary</p>
+
+<section class="w3c-summary">
+    <h2>What the W3C principles say</h2>
+    <ul>
+        @foreach (var example in Model.Examples)
+        {
+            <li>@example</li>
+        }
+    </ul>
+</section>

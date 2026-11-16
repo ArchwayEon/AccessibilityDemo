@@ -1,0 +1,109 @@
+@* Principle 5 – Functionality is available from a keyboard *@
+
+<div class="callout">
+    <p><strong>Try it:</strong> put your mouse aside and use only the keyboard on this page.</p>
+</div>
+
+<div class="table-wrap">
+    <table>
+        <caption>Standard keyboard interactions</caption>
+        <thead>
+            <tr><th scope="col">Key</th><th scope="col">What it does</th></tr>
+        </thead>
+        <tbody>
+            <tr><th scope="row"><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></th><td>Move to the next / previous link, button, or field</td></tr>
+            <tr><th scope="row"><kbd>Enter</kbd></th><td>Follow a link, press a button, submit a form</td></tr>
+            <tr><th scope="row"><kbd>Space</kbd></th><td>Press a button, check a checkbox, open a <code>&lt;select&gt;</code></td></tr>
+            <tr><th scope="row">Arrow keys</th><td>Choose radio buttons, move between tabs or menu items, scroll</td></tr>
+            <tr><th scope="row"><kbd>Esc</kbd></th><td>Close a dialog, menu, or popup</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>Use real buttons and links</h2>
+<p>
+    Native <code>&lt;button&gt;</code> and <code>&lt;a href&gt;</code> elements are focusable and respond to
+    <kbd>Enter</kbd> and <kbd>Space</kbd> automatically. A <code>&lt;div&gt;</code> with a click handler is not,
+    and getting it right takes <code>tabindex</code>, a <code>role</code>, and key handlers. Just use a button.
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: use &lt;button&gt;</h3>
+        <p><button type="button" id="kb-good-button">Save draft</button></p>
+        <p role="status" id="kb-good-status"></p>
+        <code-sample kind="good" label="Native button">
+            <button type="button">Save draft</button>
+        </code-sample>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: use a clickable &lt;div&gt; (live example)</h3>
+        <p><span class="fake-button" id="kb-bad-button">Save draft</span></p>
+        <p role="status" id="kb-bad-status"></p>
+        <p>Try to reach it with <kbd>Tab</kbd>. You can't, so a keyboard user can never save.</p>
+        <code-sample kind="bad" label="Clickable div">
+            <div class="fake-button" onclick="save()">Save draft</div>
+        </code-sample>
+    </div>
+</div>
+
+<h2>Show and hide content</h2>
+<p>
+    The native <code>&lt;details&gt;</code> and <code>&lt;summary&gt;</code> elements give you a keyboard-accessible
+    disclosure widget with no JavaScript at all.
+</p>
+<details class="card">
+    <summary>What is a keyboard trap?</summary>
+    <p>
+        A keyboard trap happens when focus moves into a component and the user cannot move it out using
+        standard keys. Common causes are embedded media players, third-party widgets, and custom code that
+        intercepts the <kbd>Tab</kbd> key.
+    </p>
+</details>
+
+<h2>Dialogs without keyboard traps</h2>
+<p>
+    A modal dialog <em>should</em> keep focus inside itself while open. That is not a trap, because
+    <kbd>Esc</kbd> and the Close button always let you leave. The native <code>&lt;dialog&gt;</code> element with
+    <code>showModal()</code> handles this, and focus returns to the button that opened it when it closes.
+</p>
+<p><button type="button" id="open-dialog">Open the keyboard tips dialog</button></p>
+
+<dialog id="kb-dialog" aria-labelledby="kb-dialog-title">
+    <h3 id="kb-dialog-title">Keyboard tips</h3>
+    <p>Focus is now inside this dialog. Press <kbd>Tab</kbd> to move between its buttons.</p>
+    <p>Press <kbd>Esc</kbd> or choose Close to return to where you were.</p>
+    <div class="button-row">
+        <button type="button" class="button-secondary" data-close-dialog>Close</button>
+        <button type="button" data-close-dialog>Got it</button>
+    </div>
+</dialog>
+
+<code-sample label="Native modal dialog">
+    <button type="button" id="open">Open dialog</button>
+    <dialog id="tips" aria-labelledby="tips-title">
+        <h2 id="tips-title">Keyboard tips</h2>
+        <button type="button" onclick="this.closest('dialog').close()">Close</button>
+    </dialog>
+    <script>
+        document.getElementById("open").addEventListener("click", () =>
+            document.getElementById("tips").showModal());
+    </script>
+</code-sample>
+
+<h2>Things that break keyboard access</h2>
+<code-sample kind="bad" label="Keyboard anti-patterns">
+    <!-- Mouse-only events: nothing happens for keyboard users -->
+    <div onmouseover="showMenu()">Courses</div>
+
+    <!-- A link with no href is not focusable -->
+    <a onclick="go()">Next page</a>
+
+    <!-- A trap: Tab is swallowed and focus can never leave -->
+    <script>
+        widget.addEventListener("keydown", e => { if (e.key === "Tab") e.preventDefault(); });
+    </script>
+</code-sample>
+
+@section Scripts {
+    <script src="~/js/keyboard.js" asp-append-version="true"></script>
+}

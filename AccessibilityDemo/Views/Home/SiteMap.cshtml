@@ -1,0 +1,27 @@
+@model IReadOnlyList<Principle>
+@{
+    ViewData["Title"] = "Site map";
+}
+
+<h1>Site map</h1>
+<p>
+    Every page on this site, in one place. A site map is one of the “more than one way” to find
+    content; the others are the navigation menu and the search box.
+</p>
+
+<ul>
+    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li><a asp-controller="Home" asp-action="Search">Search</a></li>
+    @foreach (var group in Model.GroupBy(p => p.Group))
+    {
+        <li>
+            @group.Key
+            <ul>
+                @foreach (var p in group)
+                {
+                    <li><a asp-controller="Principles" asp-action="@p.Action">@p.Number. @p.Title</a></li>
+                }
+            </ul>
+        </li>
+    }
+</ul>

@@ -1,0 +1,105 @@
+@* Principle 13 – Content is compatible with current and future user tools *@
+
+<h2>Write valid, well-formed markup</h2>
+<p>
+    Browsers are forgiving about broken HTML, but assistive technologies build their understanding of the page
+    (the <dfn>accessibility tree</dfn>) from the DOM. Errors like duplicate <code>id</code> values or badly nested
+    elements can break labels, descriptions, and relationships.
+</p>
+<code-sample kind="bad" label="Markup errors that affect accessibility">
+    <!-- Two elements share an id: the second label points at the wrong input -->
+    <label for="name">First name</label> <input id="name">
+    <label for="name">Last name</label>  <input id="name">
+
+    <!-- A list item outside of a list: screen readers lose the "list, 3 items" info -->
+    <div><li>Item</li></div>
+</code-sample>
+<p>
+    Check your pages with the <a href="https://validator.w3.org/nu/">W3C Nu HTML Checker</a>. To check a page
+    running on localhost, view the page source (<kbd>Ctrl</kbd>+<kbd>U</kbd>), copy it, and use the checker's
+    <em>text input</em> option.
+</p>
+
+<h2>Name, role, and value</h2>
+<p>Every interactive component must expose three things to assistive technology:</p>
+<dl>
+    <dt>Name</dt><dd>What it is called, for example “Email notifications”.</dd>
+    <dt>Role</dt><dd>What kind of thing it is, for example button, checkbox, switch, or tab.</dd>
+    <dt>Value / state</dt><dd>Its current setting, for example on or off, selected, or expanded.</dd>
+</dl>
+<p>
+    Native HTML elements provide all three automatically. That's the <strong>first rule of ARIA</strong>: if a native
+    element does what you need, use it. When you must build a custom widget, use
+    <abbr title="Accessible Rich Internet Applications">ARIA</abbr> to supply the name, role, and value yourself, and
+    follow the keyboard pattern in the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/">ARIA Authoring Practices Guide</a>.
+</p>
+
+<h3>Example: a custom toggle switch</h3>
+<p>
+    <button type="button" class="switch" role="switch" aria-checked="false" id="notify-switch">
+        <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+        Email notifications
+        <span class="switch-state" aria-hidden="true">Off</span>
+    </button>
+</p>
+<ul>
+    <li><strong>Name:</strong> “Email notifications” (the button's text)</li>
+    <li><strong>Role:</strong> <code>role="switch"</code></li>
+    <li><strong>Value:</strong> <code>aria-checked="true"</code> or <code>"false"</code>, updated by JavaScript</li>
+</ul>
+<code-sample label="Custom switch markup">
+    <button type="button" role="switch" aria-checked="false">
+        <span class="switch-track" aria-hidden="true">…</span>
+        Email notifications
+    </button>
+</code-sample>
+
+<h3>Example: tabs</h3>
+<p>
+    Use <kbd>Tab</kbd> to reach the selected tab, then the <kbd>←</kbd> and <kbd>→</kbd> arrow keys to change tabs
+    (<kbd>Home</kbd> and <kbd>End</kbd> jump to the first and last tab). Only the selected tab is in the tab order.
+</p>
+<div class="tabs" id="tabs-demo">
+    <div role="tablist" aria-label="Accessibility testing tools" class="tablist">
+        <button type="button" role="tab" id="tab-auto" aria-selected="true" aria-controls="panel-auto">Automated</button>
+        <button type="button" role="tab" id="tab-manual" aria-selected="false" aria-controls="panel-manual" tabindex="-1">Manual</button>
+        <button type="button" role="tab" id="tab-at" aria-selected="false" aria-controls="panel-at" tabindex="-1">Assistive technology</button>
+    </div>
+    <div role="tabpanel" id="panel-auto" aria-labelledby="tab-auto" tabindex="0">
+        <p>Automated checkers such as axe DevTools, WAVE, and Lighthouse find about a third of accessibility problems quickly.</p>
+    </div>
+    <div role="tabpanel" id="panel-manual" aria-labelledby="tab-manual" tabindex="0" hidden>
+        <p>Manual checks: keyboard-only use, zooming to 400%, checking reading order, and reviewing alt text for meaning.</p>
+    </div>
+    <div role="tabpanel" id="panel-at" aria-labelledby="tab-at" tabindex="0" hidden>
+        <p>Test with real assistive technology: NVDA or Narrator on Windows, VoiceOver on macOS and iOS, TalkBack on Android.</p>
+    </div>
+</div>
+
+<h2>Status messages</h2>
+<p>
+    When something changes without a page load (“Saved”, “3 results found”, “Added to cart”), screen reader
+    users need to hear about it without having their focus moved. Put the message in a live region such as
+    <code>role="status"</code>.
+</p>
+<p><button type="button" id="save-button">Save settings</button></p>
+<p role="status" id="save-status"></p>
+<code-sample label="Status message">
+    <button type="button" id="save">Save settings</button>
+    <p role="status" id="save-status"></p>   <!-- must exist before the text is added -->
+    <script>
+        save.addEventListener("click", () =>
+            document.getElementById("save-status").textContent = "Settings saved.");
+    </script>
+</code-sample>
+
+<h2>Inspect the accessibility tree yourself</h2>
+<ol>
+    <li>Open the browser's developer tools (<kbd>F12</kbd>).</li>
+    <li>In Chrome or Edge, select an element in the <em>Elements</em> panel and open the <em>Accessibility</em> pane. In Firefox, use the <em>Accessibility</em> tab.</li>
+    <li>Look at the switch above. You'll see its name, its role (<code>switch</code>), and its checked state change as you toggle it.</li>
+</ol>
+
+@section Scripts {
+    <script src="~/js/compatible.js" asp-append-version="true"></script>
+}

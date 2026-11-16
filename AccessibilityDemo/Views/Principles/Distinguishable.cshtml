@@ -1,0 +1,166 @@
+@* Principle 4 – Content is easier to see and hear *@
+@model ContrastViewModel
+
+<h2>Don't use color as the only signal</h2>
+<p>
+    About 1 in 12 men and 1 in 200 women have some form of color vision deficiency. Pair color with text,
+    an icon, a pattern, or position.
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: color plus text</h3>
+        <ul class="status-list" aria-label="Server status">
+            <li><span class="dot dot-green" aria-hidden="true"></span> Web server: <strong>Online</strong></li>
+            <li><span class="dot dot-red" aria-hidden="true"></span> Database: <strong>Offline</strong></li>
+        </ul>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: color alone</h3>
+        <ul class="status-list" aria-label="Server status, color only">
+            <li><span class="dot dot-green"></span> Web server</li>
+            <li><span class="dot dot-red"></span> Database</li>
+        </ul>
+        <p>Which one is down? Not everyone can tell.</p>
+    </div>
+</div>
+<p>
+    Links inside paragraphs should also be underlined (or otherwise distinguished by more than color),
+    which is why this site keeps the default underline.
+</p>
+
+<h2>Sufficient contrast</h2>
+<p>WCAG level AA requires these minimum contrast ratios:</p>
+<ul>
+    <li><strong>4.5:1</strong> for normal text,</li>
+    <li><strong>3:1</strong> for large text (24px, or 18.66px bold) and for the borders of controls, focus indicators, and meaningful graphics.</li>
+</ul>
+<p>
+    The checker below uses the same formula as WCAG. You can read the C# version in
+    <code>Infrastructure/ColorContrast.cs</code>. It is an ordinary GET form, so it works without JavaScript.
+</p>
+
+<form method="get" asp-action="Distinguishable" class="card" aria-labelledby="contrast-heading">
+    <h3 id="contrast-heading">Contrast checker</h3>
+    <div class="form-group">
+        <label asp-for="Foreground"></label>
+        <span class="hint" id="fg-hint">A hex value, for example #333333</span>
+        <input asp-for="Foreground" type="text" spellcheck="false" aria-describedby="fg-hint" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Background"></label>
+        <span class="hint" id="bg-hint">A hex value, for example #ffffff</span>
+        <input asp-for="Background" type="text" spellcheck="false" aria-describedby="bg-hint" />
+    </div>
+    <button type="submit">Check contrast</button>
+
+    @if (Model.Error is not null)
+    {
+        <p class="field-error" role="alert">@Model.Error</p>
+    }
+    else if (Model.Ratio is double ratio)
+    {
+        <h4>Result</h4>
+        <p>
+            @* Normalize() guarantees a plain #rrggbb value, so user input can't inject other CSS. *@
+            <span class="swatch" style="color:@ColorContrast.Normalize(Model.Foreground);background:@ColorContrast.Normalize(Model.Background)">Sample text in these colors</span>
+        </p>
+        <p><strong>Contrast ratio: @ratio.ToString("0.00"):1</strong></p>
+        <ul class="status-list">
+            @foreach (var (label, min) in new[] {
+                ("AA normal text (4.5:1)", ColorContrast.AaNormalText),
+                ("AA large text and UI components (3:1)", ColorContrast.AaLargeText),
+                ("AAA normal text (7:1)", ColorContrast.AaaNormalText) })
+            {
+                var pass = ratio >= min;
+                <li>
+                    <span class="badge @(pass ? "badge-pass" : "badge-fail")">@(pass ? "✓ Pass" : "✗ Fail")</span>
+                    @label
+                </li>
+            }
+        </ul>
+    }
+</form>
+
+<p>Try some common combinations:</p>
+<ul>
+    <li><a asp-action="Distinguishable" asp-route-foreground="#777777" asp-route-background="#ffffff">Medium gray (#777777) on white</a>, which fails AA for normal text</li>
+    <li><a asp-action="Distinguishable" asp-route-foreground="#595959" asp-route-background="#ffffff">Dark gray (#595959) on white</a>, which passes AA</li>
+    <li><a asp-action="Distinguishable" asp-route-foreground="#ffffff" asp-route-background="#ff8c00">White on orange (#ff8c00)</a>, a common button color that fails</li>
+    <li><a asp-action="Distinguishable" asp-route-foreground="#0b5cad" asp-route-background="#ffffff">This site's link blue (#0b5cad) on white</a></li>
+</ul>
+
+<h2>Resize text and reflow</h2>
+<p>
+    Users must be able to zoom to 200% (and reflow content at 400%) without losing content or scrolling
+    sideways. To test, press <kbd>Ctrl</kbd>+<kbd>+</kbd> until the browser shows 400%. This site collapses to a
+    single column and nothing is cut off, because:
+</p>
+<ul>
+    <li>sizes use <code>rem</code> and <code>em</code>, not fixed pixels;</li>
+    <li>layouts use flexbox and grid with wrapping, not fixed widths;</li>
+    <li>the viewport meta tag does <strong>not</strong> disable zoom.</li>
+</ul>
+<code-sample kind="bad" label="Things that break zoom and reflow">
+    <meta name="viewport" content="width=device-width, maximum-scale=1, user-scalable=no">
+    <div style="width:1200px; height:40px; overflow:hidden">…</div>
+</code-sample>
+
+<h2>Text spacing</h2>
+<p>
+    Some people with dyslexia or low vision use browser extensions to increase line, letter, and word spacing.
+    Content must still work. Press the button to apply the spacing values WCAG tests for.
+</p>
+<p>
+    <button type="button" class="button-secondary" id="spacing-toggle" aria-pressed="false" aria-controls="spacing-sample">
+        Apply WCAG text spacing
+    </button>
+</p>
+<div id="spacing-sample" class="card">
+    <p>
+        Good layouts let text grow. When containers have fixed heights, extra spacing makes words overflow or get
+        clipped. This box has no fixed height, so it simply grows taller.
+    </p>
+    <p>Line height 1.5, paragraph spacing 2×, letter spacing 0.12em, word spacing 0.16em.</p>
+</div>
+
+<h2>Avoid images of text</h2>
+<div class="compare">
+    <div class="example example-bad">
+        <h3>Don't: put text in an image</h3>
+        <img src="~/images/image-of-text.svg" width="360" height="90" class="image-of-text"
+             alt="Registration closes Friday. Sign up at the CS office, room 462." />
+        <p>It blurs when zoomed, can't be restyled or translated, and can't be found with <kbd>Ctrl</kbd>+<kbd>F</kbd>.</p>
+    </div>
+    <div class="example example-good">
+        <h3>Do: use real text styled with CSS</h3>
+        <div style="background:#5a2d91;color:#fff;border-radius:8px;padding:0.75rem 1rem;text-align:center;font-family:Georgia,serif">
+            <p style="margin:0;font-size:1.6rem;font-weight:700">Registration Closes Friday</p>
+            <p style="margin:0">Sign up at the CS office, room 462</p>
+        </div>
+    </div>
+</div>
+
+<h2>Audio control</h2>
+<p>
+    Never start audio automatically. If audio plays for more than 3 seconds, users must be able to pause it or
+    change its volume separately from the system volume, because it can drown out a screen reader.
+    Background audio behind speech should be low (about 20 dB quieter) or have an off switch.
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: let the user start it</h3>
+        <code-sample kind="good" label="Audio with controls">
+            <audio controls src="lecture.mp3"></audio>
+        </code-sample>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: autoplay without controls</h3>
+        <code-sample kind="bad" label="Autoplaying audio">
+            <audio autoplay loop src="background-music.mp3"></audio>
+        </code-sample>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/distinguishable.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,102 @@
+@* Principle 9 – Users can use different input modalities beyond keyboard *@
+
+<h2>Alternatives to dragging and complex gestures</h2>
+<p>
+    Dragging, pinching, and multi-finger swipes need fine motor control. Every one of them needs a simple
+    alternative, such as a single tap or click. Rank these topics by dragging them with a mouse, <em>or</em> use the
+    Move up and Move down buttons, which work with touch, keyboard, voice control, and switch devices.
+</p>
+<ol class="sortable" id="rank-list" aria-label="Topics ranked by interest">
+    @foreach (var topic in new[] { "Screen readers", "Color contrast", "Keyboard testing", "Captions" })
+    {
+        <li draggable="true" data-name="@topic">
+            <span>@topic</span>
+            @* The visible text ("Move up") comes first in the accessible name, so voice
+               control commands like "click Move up" still work. *@
+            <span class="item-actions">
+                <button type="button" class="button-secondary" data-move="up">Move up<span class="visually-hidden">: @topic</span></button>
+                <button type="button" class="button-secondary" data-move="down">Move down<span class="visually-hidden">: @topic</span></button>
+            </span>
+        </li>
+    }
+</ol>
+
+<h2>Prevent accidental activation, and offer undo</h2>
+<p>
+    People with tremors, or anyone on a bumpy bus, will sometimes tap the wrong thing. Destructive actions should
+    be easy to undo. Native buttons also activate on <em>release</em> (the <code>click</code> event), so you can slide
+    your finger off a button to cancel. Avoid triggering actions on <code>mousedown</code> or <code>touchstart</code>.
+</p>
+<ul class="sortable" id="file-list" aria-label="Your files">
+    <li><span>lab1-notes.txt</span> <button type="button" class="button-danger" data-delete>Delete<span class="visually-hidden"> lab1-notes.txt</span></button></li>
+    <li><span>project-plan.docx</span> <button type="button" class="button-danger" data-delete>Delete<span class="visually-hidden"> project-plan.docx</span></button></li>
+    <li><span>screenshot.png</span> <button type="button" class="button-danger" data-delete>Delete<span class="visually-hidden"> screenshot.png</span></button></li>
+</ul>
+<div class="toast" id="undo-toast" hidden>
+    <span id="undo-text"></span>
+    <button type="button" id="undo-button">Undo</button>
+</div>
+
+<h2>Visible labels match the code (label in name)</h2>
+<p>
+    Voice control users say what they see, for example “Click Search”. If the accessible name in the code is
+    different from the visible label, the command fails. The accessible name should <em>contain</em> the visible text,
+    ideally at the start.
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: match the visible text</h3>
+        <p><button type="button">Search</button></p>
+        <code-sample kind="good" label="Matching label">
+            <button type="button">Search</button>
+        </code-sample>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: override it with a different name</h3>
+        <p><button type="button" aria-label="Find items in catalog">Search</button></p>
+        <code-sample kind="bad" label="Mismatched label">
+            <button type="button" aria-label="Find items in catalog">Search</button>
+        </code-sample>
+        <p>Saying “Click Search” won't work, because the button's name is “Find items in catalog”.</p>
+    </div>
+</div>
+
+<h2>Motion-activated features need a button too</h2>
+<p>
+    “Shake to undo” or “tilt to scroll” is impossible for someone whose device is mounted to a wheelchair,
+    and it can be triggered by accident. Always provide a regular control, and let users turn motion actions off.
+</p>
+<code-sample label="Motion with a button alternative">
+    <button type="button" id="undo">Undo</button>   <!-- always available -->
+    <script>
+        undoButton.addEventListener("click", undo);
+        if (settings.shakeToUndo) {                   // user can turn this off
+            window.addEventListener("devicemotion", detectShake);
+        }
+    </script>
+</code-sample>
+
+<h2>Large enough targets</h2>
+<p>
+    WCAG 2.2 requires targets of at least <strong>24 × 24 CSS pixels</strong> (level AA) and recommends
+    <strong>44 × 44</strong> (level AAA). All buttons on this site have a minimum height of 2.75rem (44px).
+</p>
+<div class="compare">
+    <div class="example example-good">
+        <h3>Do: generous targets</h3>
+        <div class="target-demo">
+            <button type="button" class="button-secondary">Previous</button>
+            <button type="button" class="button-secondary">Next</button>
+        </div>
+    </div>
+    <div class="example example-bad">
+        <h3>Don't: tiny targets close together</h3>
+        <div class="target-demo">
+            <button type="button" class="button-secondary tiny-target">Prev</button><button type="button" class="button-secondary tiny-target">Next</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/input-modalities.js" asp-append-version="true"></script>
+}

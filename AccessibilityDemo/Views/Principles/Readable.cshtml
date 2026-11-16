@@ -1,0 +1,93 @@
+@* Principle 10 – Text is readable and understandable *@
+
+<h2>Identify the page language</h2>
+<p>
+    The <code>lang</code> attribute on <code>&lt;html&gt;</code> tells screen readers which voice and pronunciation
+    rules to use, helps browsers offer translation, and helps with hyphenation and spell-checking. Without it,
+    a screen reader set to French may read English text with a French accent. Every page on this site starts with:
+</p>
+<code-sample kind="good" label="Page language">
+    <html lang="en">
+        …
+    </html>
+</code-sample>
+
+<h2>Identify changes in language</h2>
+<p>
+    When a passage is in a different language, mark it with its own <code>lang</code> attribute. Listen to this
+    section with a screen reader; the voice changes for the quotation.
+</p>
+<blockquote lang="es">
+    <p>“El poder de la Web está en su universalidad. El acceso por cualquier persona, independientemente de la discapacidad, es un aspecto esencial.”</p>
+</blockquote>
+<p>
+    Translation: “The power of the Web is in its universality. Access by everyone regardless of disability is an essential aspect.”
+    (Tim Berners-Lee, inventor of the World Wide Web)
+</p>
+<p>
+    It works for short phrases too: good design has a certain <span lang="fr">je ne sais quoi</span>.
+</p>
+<code-sample label="Marking a change of language">
+    <blockquote lang="es">
+        <p>El poder de la Web está en su universalidad…</p>
+    </blockquote>
+    <p>Good design has a certain <span lang="fr">je ne sais quoi</span>.</p>
+</code-sample>
+
+<h2>Define unusual words and abbreviations</h2>
+<p>
+    Expand abbreviations the first time they appear, and define jargon. HTML has elements for this:
+</p>
+<ul>
+    <li>
+        <abbr title="Accessible Rich Internet Applications">ARIA</abbr> attributes add meaning to custom widgets.
+        (<code>&lt;abbr title="…"&gt;</code>, which shows a tooltip on hover. Because tooltips aren't available to keyboard or
+        touch users, it is still best to write the expansion in the text.)
+    </li>
+    <li>
+        A <dfn id="def-screen-reader">screen reader</dfn> is software that reads the content of the screen aloud or
+        outputs it to a braille display. (<code>&lt;dfn&gt;</code> marks the term being defined.)
+    </li>
+</ul>
+<p>A glossary is another good option:</p>
+<dl>
+    <dt>WCAG (Web Content Accessibility Guidelines)</dt>
+    <dd>The international standard for web accessibility, published by the W3C.</dd>
+    <dt>Assistive technology</dt>
+    <dd>Hardware or software that helps people with disabilities use a computer, such as screen readers, magnifiers, and switch devices.</dd>
+    <dt>“Piece of cake” (idiom)</dt>
+    <dd>Very easy. Idioms like this can confuse non-native speakers and people who interpret language literally, so avoid them or explain them.</dd>
+</dl>
+
+<h2>Write in plain language</h2>
+<p>
+    Use short sentences, common words, and the active voice. Put the most important information first.
+    Plain language helps everyone, including people with cognitive disabilities, non-native speakers, and busy readers.
+</p>
+<div class="compare">
+    <div class="example example-bad">
+        <h3>Don't: bury the meaning</h3>
+        <p>
+            Pursuant to departmental policy, students who have not effectuated the requisite registration procedures prior
+            to the aforementioned deadline shall be precluded from participation in laboratory sessions for the duration
+            of the term.
+        </p>
+    </div>
+    <div class="example example-good">
+        <h3>Do: say it plainly</h3>
+        <p>
+            Register by Friday. If you don't, you can't attend labs this semester.
+        </p>
+    </div>
+</div>
+<p>
+    When complex text can't be avoided (for example legal terms), provide a simplified summary next to it.
+</p>
+<details class="card">
+    <summary>Read a simplified summary of the course's late-work policy</summary>
+    <ul>
+        <li>You can turn in work up to 2 days late.</li>
+        <li>You lose 10% of the grade for each late day.</li>
+        <li>After 2 days, ask your instructor before submitting.</li>
+    </ul>
+</details>

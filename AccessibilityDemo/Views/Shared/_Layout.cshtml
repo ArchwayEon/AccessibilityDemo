@@ -1,0 +1,122 @@
+﻿@*
+    The shared layout demonstrates several principles on EVERY page:
+      • lang="en" on <html>                       (Readable)
+      • a unique, descriptive <title>               (Navigable)
+      • viewport meta that does NOT disable zoom    (Distinguishable)
+      • a "Skip to main content" link               (Navigable – bypass blocks)
+      • landmarks: header, nav, main, footer        (Adaptable / Navigable)
+      • the same navigation in the same place       (Predictable)
+      • aria-current="page" on the current link     (Navigable – where am I?)
+      • a search form – a second way to find pages  (Navigable)
+      • a polite live region for announcements      (Compatible – status messages)
+*@
+@{
+    var principle = ViewData["Principle"] as Principle;
+    var isSubpage = ViewData["Subpage"] is true;
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var pageTitle = ViewData["Title"] as string ?? principle?.Title ?? "Accessibility Principles Demo";
+    bool IsCurrent(string c, string a) =>
+        string.Equals(controller, c, StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(action, a, StringComparison.OrdinalIgnoreCase) && !isSubpage;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <!-- Never add maximum-scale=1 or user-scalable=no: that blocks pinch-zoom. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A CSCI 3110 demo of the W3C accessibility principles, built with ASP.NET Core MVC." />
+    <!-- Page-specific part first, site name last: screen readers and browser tabs show the important part first. -->
+    <title>@pageTitle – Accessibility Principles Demo</title>
+    <script>
+        // Apply the saved "Reduce motion" preference before the page paints.
+        try { if (localStorage.getItem("reduceMotion") === "true") document.documentElement.classList.add("reduce-motion"); } catch (e) { }
+    </script>
+    <link rel="icon" href="~/favicon.ico" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            @* The logo is decorative here (alt="") because the link already has text. *@
+            <a class="site-name" asp-controller="Home" asp-action="Index">
+                <img src="~/images/logo.svg" alt="" width="40" height="40" />
+                Accessibility Principles Demo
+            </a>
+
+            <form class="site-search" role="search" method="get" asp-controller="Home" asp-action="Search">
+                <label for="site-search-q">Search principles</label>
+                <input type="search" id="site-search-q" name="q" autocomplete="off"
+                       value="@(controller == "Home" && action == "Search" ? Context.Request.Query["q"].ToString() : "")" />
+                <button type="submit">Search</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="layout">
+        <nav class="site-nav" aria-label="Main">
+            <ul>
+                <li><a asp-controller="Home" asp-action="Index" aria-current="@(IsCurrent("Home", "Index") ? "page" : null)">Home</a></li>
+                <li><a asp-controller="Home" asp-action="SiteMap" aria-current="@(IsCurrent("Home", "SiteMap") ? "page" : null)">Site map</a></li>
+            </ul>
+            @foreach (var group in PrincipleCatalog.All.GroupBy(p => p.Group))
+            {
+                var groupId = $"nav-{group.Key.ToString().ToLowerInvariant()}";
+                <p class="nav-group" id="@groupId">@group.Key</p>
+                <ul aria-labelledby="@groupId">
+                    @foreach (var p in group)
+                    {
+                        <li>
+                            <a asp-controller="Principles" asp-action="@p.Action"
+                               aria-current="@(IsCurrent("Principles", p.Action) ? "page" : null)">@p.ShortTitle</a>
+                        </li>
+                    }
+                </ul>
+            }
+        </nav>
+
+        @* tabindex="-1" lets the skip link move keyboard focus here in every browser. *@
+        <main id="main" tabindex="-1">
+            <partial name="_Breadcrumbs" />
+
+            @if (principle is not null && !isSubpage)
+            {
+                <partial name="_PrincipleIntro" model="principle" />
+            }
+
+            @RenderBody()
+
+            @if (principle is not null && !isSubpage)
+            {
+                <partial name="_PrinciplePager" model="principle" />
+            }
+        </main>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>
+                Content adapted from
+                <a href="https://www.w3.org/WAI/fundamentals/accessibility-principles/">W3C WAI: Accessibility Principles</a>.
+                CSCI 3110 teaching demo.
+            </p>
+            <ul class="footer-links">
+                <li><a asp-controller="Home" asp-action="SiteMap">Site map</a></li>
+                <li>
+                    @* A toggle button: the label stays the same and aria-pressed reports the state. *@
+                    <button type="button" id="motion-toggle" class="button-secondary" aria-pressed="false">Reduce motion</button>
+                </li>
+            </ul>
+        </div>
+    </footer>
+
+    @* Screen readers read changes to this region aloud without moving focus. *@
+    <div id="announcer" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

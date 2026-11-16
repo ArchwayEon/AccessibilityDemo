@@ -1,0 +1,45 @@
+﻿@model IReadOnlyList<Principle>
+@{
+    ViewData["Title"] = "Home";
+}
+
+<h1>Accessibility Principles Demo</h1>
+<p class="lead">
+    This site demonstrates each of the W3C accessibility principles with working examples
+    you can try with a keyboard, a screen reader, browser zoom, and accessibility testing tools.
+</p>
+
+<div class="callout">
+    <h2>How to use this demo</h2>
+    <ol>
+        <li>Pick a principle below. Each page lists what the W3C principle says, then shows how to meet it.</li>
+        <li>Compare the <strong>Do</strong> (✓) and <strong>Don't</strong> (✗) examples. The “Don't” examples are
+            <em>intentionally</em> inaccessible, so testing tools will flag them.</li>
+        <li>Try every page using only the keyboard: <kbd>Tab</kbd>, <kbd>Shift</kbd>+<kbd>Tab</kbd>,
+            <kbd>Enter</kbd>, <kbd>Space</kbd>, and the arrow keys.</li>
+        <li>View the Razor source in <code>Views/Principles</code> to see how each example is built.</li>
+    </ol>
+</div>
+
+<h2>The four WCAG principles: POUR</h2>
+<p>
+    The Web Content Accessibility Guidelines (<abbr title="Web Content Accessibility Guidelines">WCAG</abbr>)
+    group everything under four principles. Content must be <strong>P</strong>erceivable,
+    <strong>O</strong>perable, <strong>U</strong>nderstandable, and <strong>R</strong>obust.
+</p>
+
+@foreach (var group in Model.GroupBy(p => p.Group))
+{
+    <h2>@group.Key</h2>
+    <ul class="card-grid">
+        @foreach (var p in group)
+        {
+            <li>
+                <article class="card">
+                    <h3><a asp-controller="Principles" asp-action="@p.Action">@p.Title</a></h3>
+                    <p>@p.Summary</p>
+                </article>
+            </li>
+        }
+    </ul>
+}
